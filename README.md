@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" alt="OneBib logo" width="320">
+</p>
+
 # OneBib
 
 OneBib adds simple, local BibTeX citations and reference lists to Obsidian notes. It does not require Zotero, Mendeley, an account, or a network connection.
@@ -54,7 +58,7 @@ Copy `main.js`, `manifest.json`, and `styles.css` into `<vault>/.obsidian/plugin
 
 ## Privacy and compatibility
 
-OneBib reads only the selected `.bib` file and Markdown notes in the current vault. It has no network access, account requirement, advertising, payments, or telemetry. It does not access files outside the vault. The runtime bundle has no bundled third-party dependencies and supports both desktop and mobile Obsidian 1.13.0 and later.
+OneBib reads only the selected `.bib` file and Markdown notes in the current vault. It has no network access, account requirement, advertising, payments, or telemetry. It does not access files outside the vault. The runtime bundle has no bundled third-party dependencies and supports both desktop and mobile Obsidian 1.5.0 and later. On Obsidian 1.13.0 and later, its settings are also available through settings search.
 
 ## Current scope
 

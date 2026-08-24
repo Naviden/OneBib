@@ -1,4 +1,11 @@
-import { App, PluginSettingTab, type SettingDefinitionItem, type TFile } from "obsidian";
+import {
+  App,
+  PluginSettingTab,
+  Setting,
+  requireApiVersion,
+  type SettingDefinitionItem,
+  type TFile,
+} from "obsidian";
 import type OneBibPlugin from "./main";
 
 export class OneBibSettingTab extends PluginSettingTab {
@@ -54,22 +61,82 @@ export class OneBibSettingTab extends PluginSettingTab {
     ];
   }
 
-  async setControlValue(key: string, value: unknown): Promise<void> {
-    const normalized = typeof value === "string" ? value.trim() : value;
-    await super.setControlValue(key, normalized);
+  /** Fallback for Obsidian versions earlier than 1.13. */
+  display(): void {
+    this.renderLegacySettings();
+  }
 
-    if (key === "bibliographyPath") {
-      await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
-      this.update();
-    } else if (key === "autoUpdateReferences" && normalized === true) {
-      await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
-    } else if (key === "referenceHeading" && this.oneBib.settings.autoUpdateReferences) {
-      await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
+  private renderLegacySettings(): void {
+    this.containerEl.empty();
+
+    new Setting(this.containerEl)
+      .setName("Bibliography file")
+      .setDesc("Path to a .bib file inside this vault.")
+      .addText((text) =>
+        text
+          .setPlaceholder("References/library.bib")
+          .setValue(this.oneBib.settings.bibliographyPath)
+          .onChange(async (value) => {
+            this.oneBib.settings.bibliographyPath = value.trim();
+            await this.oneBib.saveSettings(false);
+          }),
+      )
+      .addButton((button) =>
+        button.setButtonText("Choose").onClick(() => {
+          this.oneBib.openBibliographyPicker();
+        }),
+      );
+
+    new Setting(this.containerEl)
+      .setName("Update references automatically")
+      .setDesc("Keep the managed references section in cited notes synchronized.")
+      .addToggle((toggle) =>
+        toggle.setValue(this.oneBib.settings.autoUpdateReferences).onChange(async (value) => {
+          this.oneBib.settings.autoUpdateReferences = value;
+          await this.oneBib.saveSettings(false);
+          if (value) await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
+        }),
+      );
+
+    new Setting(this.containerEl)
+      .setName("Reference heading")
+      .setDesc("Heading used above the generated bibliography.")
+      .addText((text) =>
+        text.setValue(this.oneBib.settings.referenceHeading).onChange(async (value) => {
+          this.oneBib.settings.referenceHeading = value.trim() || "References";
+          await this.oneBib.saveSettings(false);
+        }),
+      );
+
+    new Setting(this.containerEl)
+      .setName("Library status")
+      .setDesc(this.oneBib.getLibraryStatus())
+      .addButton((button) =>
+        button.setButtonText("Reload").onClick(async () => {
+          await this.oneBib.reloadBibliography({ notify: true, updateNotes: true });
+          this.renderLegacySettings();
+        }),
+      );
+  }
+
+  async setControlValue(key: string, value: unknown): Promise<void> {
+    if (requireApiVersion("1.13.0")) {
+      const normalized = typeof value === "string" ? value.trim() : value;
+      await super.setControlValue(key, normalized);
+
+      if (key === "bibliographyPath") {
+        await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
+        this.update();
+      } else if (key === "autoUpdateReferences" && normalized === true) {
+        await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
+      } else if (key === "referenceHeading" && this.oneBib.settings.autoUpdateReferences) {
+        await this.oneBib.reloadBibliography({ notify: false, updateNotes: true });
+      }
     }
   }
 
   private async reloadAndRefresh(): Promise<void> {
     await this.oneBib.reloadBibliography({ notify: true, updateNotes: true });
-    this.update();
+    if (requireApiVersion("1.13.0")) this.update();
   }
 }
