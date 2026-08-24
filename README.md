@@ -23,6 +23,17 @@ Type `>>` to search the library by citation key, author, or title. You can also 
 
 The original marker stays in the Markdown file. Move the cursor onto a rendered citation in Live Preview to edit its key.
 
+### Reference markers while editing
+
+OneBib surrounds the generated References section with two internal markers:
+
+```markdown
+<!-- onebib:references:start -->
+<!-- onebib:references:end -->
+```
+
+Obsidian may show these lines in Live Preview or Source mode. This is normal: OneBib uses them to find and safely update the generated bibliography. Switch to **Reading view** with the book icon for a clean document; the markers are hidden there. Do not edit or delete the markers. Edit the `.bib` file or citation keys instead.
+
 ## Example BibTeX
 
 ```bibtex
@@ -64,7 +75,7 @@ OneBib reads only the selected `.bib` file and Markdown notes in the current vau
 
 The built-in formatter provides a practical APA-like author–year style. It is not yet a complete CSL or BibTeX implementation. The parser supports common BibTeX entries, nested braces, quoted values, string macros, and concatenated values.
 
-The block between `<!-- onebib:references:start -->` and `<!-- onebib:references:end -->` is generated. Edit the BibTeX source or citation markers instead of editing that block manually.
+The content inside the managed References block is generated. Edit the BibTeX source or citation markers instead of editing that block manually.
 
 ## Release
 
