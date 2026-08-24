@@ -8,6 +8,7 @@ import {
   normalizePath,
 } from "obsidian";
 import { updateManagedReferences } from "./bibliography";
+import { findAvailableBibliographyPath } from "./bibliography-file";
 import { bibliographyRefreshEffect, createCitationEditorExtension } from "./editor-extension";
 import { formatCitationMarkerForInsertion } from "./citations";
 import { BibliographyLibrary } from "./library";
@@ -27,6 +28,7 @@ export default class OneBibPlugin extends Plugin {
 
   private readonly noteTimers = new Map<string, number>();
   private bibliographyTimer: number | null = null;
+  private bibliographyImportInput: HTMLInputElement | null = null;
   private readonly updatingPaths = new Set<string>();
 
   async onload(): Promise<void> {
@@ -58,6 +60,12 @@ export default class OneBibPlugin extends Plugin {
       id: "choose-bibliography",
       name: "Choose bibliography file",
       callback: () => this.openBibliographyPicker(),
+    });
+
+    this.addCommand({
+      id: "import-bibliography",
+      name: "Import bibliography file from device",
+      callback: () => this.openBibliographyImportDialog(),
     });
 
     this.addCommand({
@@ -103,6 +111,8 @@ export default class OneBibPlugin extends Plugin {
   onunload(): void {
     for (const timer of this.noteTimers.values()) window.clearTimeout(timer);
     if (this.bibliographyTimer !== null) window.clearTimeout(this.bibliographyTimer);
+    this.bibliographyImportInput?.remove();
+    this.bibliographyImportInput = null;
   }
 
   async loadSettings(): Promise<void> {
@@ -138,13 +148,44 @@ export default class OneBibPlugin extends Plugin {
   openBibliographyPicker(): void {
     const files = this.getBibliographyFiles();
     if (files.length === 0) {
-      new Notice("Add a .bib file to this vault first.");
+      this.openBibliographyImportDialog();
       return;
     }
     new BibliographyPickerModal(this.app, files, (file) => {
       this.settings.bibliographyPath = file.path;
       void this.saveSettings();
     }).open();
+  }
+
+  openBibliographyImportDialog(onImported?: () => void): void {
+    this.bibliographyImportInput?.remove();
+
+    const input = createEl("input");
+    input.type = "file";
+    input.accept = ".bib,text/x-bibtex";
+    input.hidden = true;
+    this.bibliographyImportInput = input;
+
+    const cleanup = (): void => {
+      input.remove();
+      if (this.bibliographyImportInput === input) this.bibliographyImportInput = null;
+    };
+
+    input.addEventListener("change", () => {
+      const file = input.files?.item(0);
+      cleanup();
+      if (!file) return;
+      void this.importBibliographyFile(file)
+        .then(() => onImported?.())
+        .catch((error: unknown) => {
+          console.error("OneBib could not import the bibliography file.", error);
+          new Notice("Could not import that bibliography file.");
+        });
+    }, { once: true });
+    input.addEventListener("cancel", cleanup, { once: true });
+
+    document.body.appendChild(input);
+    input.click();
   }
 
   getLibraryStatus(): string {
@@ -171,6 +212,27 @@ export default class OneBibPlugin extends Plugin {
       .getFiles()
       .filter((file) => file.extension.toLowerCase() === "bib")
       .sort((left, right) => left.path.localeCompare(right.path));
+  }
+
+  private async importBibliographyFile(file: File): Promise<void> {
+    if (!file.name.toLowerCase().endsWith(".bib")) {
+      new Notice("Choose a file with the .bib extension.");
+      return;
+    }
+
+    const importedPath = findAvailableBibliographyPath(
+      file.name,
+      (path) => this.app.vault.getAbstractFileByPath(path) !== null,
+    );
+    await this.app.vault.createBinary(importedPath, await file.arrayBuffer());
+    this.settings.bibliographyPath = importedPath;
+    await this.saveSettings();
+
+    const count = this.library.entries.size;
+    const warningText = this.library.warnings.length > 0
+      ? ` with ${this.library.warnings.length} warning(s)`
+      : "";
+    new Notice(`Imported ${importedPath} and loaded ${count} ${count === 1 ? "entry" : "entries"}${warningText}.`);
   }
 
   private async discoverSoleBibliography(): Promise<void> {

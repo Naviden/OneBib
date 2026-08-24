@@ -32,6 +32,16 @@ export class OneBibSettingTab extends PluginSettingTab {
         },
       },
       {
+        name: "Import bibliography file",
+        desc: "Choose a .bib file from this device. OneBib copies it into the vault and selects it.",
+        aliases: ["BibTeX", "browse", "device"],
+        action: () => {
+          this.oneBib.openBibliographyImportDialog(() => {
+            if (requireApiVersion("1.13.0")) this.update();
+          });
+        },
+      },
+      {
         name: "Update references automatically",
         desc: "Keep the managed references section in cited notes synchronized.",
         control: {
@@ -84,6 +94,11 @@ export class OneBibSettingTab extends PluginSettingTab {
       .addButton((button) =>
         button.setButtonText("Choose").onClick(() => {
           this.oneBib.openBibliographyPicker();
+        }),
+      )
+      .addButton((button) =>
+        button.setButtonText("Import").onClick(() => {
+          this.oneBib.openBibliographyImportDialog(() => this.renderLegacySettings());
         }),
       );
 

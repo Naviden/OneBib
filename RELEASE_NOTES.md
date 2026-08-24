@@ -1,15 +1,16 @@
-# OneBib 1.0.1
+# OneBib 1.0.2
 
-OneBib 1.0.1 fixes formatting immediately after inline citation markers in Live Preview.
+OneBib 1.0.2 makes selecting a bibliography straightforward, even when the file is not yet inside the vault.
 
 ## Highlights
 
-- Adds one trailing safety space when OneBib inserts a citation at the end of a line or before adjoining text.
-- Adds the same safety space when you manually type the second `<` in a closing citation marker.
-- Avoids adding an unnecessary space when whitespace or punctuation already follows the marker.
+- Adds **Import bibliography file** to settings and the command palette.
+- Opens the system file picker when no `.bib` file is detected in the vault.
+- Copies the selected file into the vault, selects it, and loads its entries immediately.
+- Avoids overwriting an existing file by choosing a unique imported filename.
 
 ## Installation
 
-Download `onebib-1.0.1.zip` and extract it into `<vault>/.obsidian/plugins/onebib/`, or download `main.js`, `manifest.json`, and `styles.css` into that directory. Enable OneBib under **Settings → Community plugins**.
+Download `onebib-1.0.2.zip` and extract it into `<vault>/.obsidian/plugins/onebib/`, or download `main.js`, `manifest.json`, and `styles.css` into that directory. Enable OneBib under **Settings → Community plugins**.
 
 Please report parsing or formatting edge cases through GitHub Issues.

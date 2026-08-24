@@ -8,16 +8,15 @@ OneBib adds simple, local BibTeX citations and reference lists to Obsidian notes
 
 ## Use OneBib
 
-1. Put a `.bib` file anywhere inside your vault.
-2. Open **Settings → OneBib** and choose that file. If the vault contains exactly one `.bib` file, OneBib selects it automatically.
-3. Type a citation key between `>>` and `<<`:
+1. Open **Settings → OneBib** and select **Import bibliography file** to choose a `.bib` file directly from your device. OneBib copies it into the root of the vault and selects it. Alternatively, put a `.bib` file anywhere inside the vault and select it in the **Bibliography file** setting. If the vault contains exactly one `.bib` file, OneBib selects it automatically.
+2. Type a citation key between `>>` and `<<`:
 
    ```markdown
    Explanations are important for trustworthy systems >>cambria2023survey<<.
    ```
 
-4. In Live Preview and Reading view, OneBib renders the marker as `(Cambria et al., 2023)`.
-5. OneBib adds a managed **References** section to the end of the note and keeps it synchronized.
+3. In Live Preview and Reading view, OneBib renders the marker as `(Cambria et al., 2023)`.
+4. OneBib adds a managed **References** section to the end of the note and keeps it synchronized.
 
 Type `>>` to search the library by citation key, author, or title. You can also use the **Insert citation** command. Multiple works can be cited together with `>>firstKey; secondKey<<`.
 
@@ -56,6 +55,7 @@ Obsidian may show these lines in Live Preview or Source mode. This is normal: On
 - **Insert citation** opens a searchable citation picker.
 - **Update references in current note** refreshes the managed bibliography immediately.
 - **Choose BibTeX file** selects a `.bib` file from the vault.
+- **Import bibliography file from device** opens the system file picker, copies the selected `.bib` into the vault, and loads it.
 - **Reload bibliography** reparses the selected file.
 
 ## Install for development
@@ -71,7 +71,7 @@ Copy `main.js`, `manifest.json`, and `styles.css` into `<vault>/.obsidian/plugin
 
 ## Privacy and compatibility
 
-OneBib reads only the selected `.bib` file and Markdown notes in the current vault. It has no network access, account requirement, advertising, payments, or telemetry. It does not access files outside the vault. The runtime bundle has no bundled third-party dependencies and supports both desktop and mobile Obsidian 1.5.0 and later. On Obsidian 1.13.0 and later, its settings are also available through settings search.
+OneBib reads only the selected `.bib` file and Markdown notes in the current vault. If you use **Import bibliography file**, the system file picker grants access only to the file you explicitly select, and OneBib immediately copies it into the vault. It has no network access, account requirement, advertising, payments, or telemetry. The runtime bundle has no bundled third-party dependencies and supports both desktop and mobile Obsidian 1.5.0 and later. On Obsidian 1.13.0 and later, its settings are also available through settings search.
 
 ## Current scope
 
@@ -86,7 +86,7 @@ OneBib follows the [official Obsidian plugin release process](https://docs.obsid
 1. Set the same semantic version in `manifest.json` and `package.json`.
 2. Update `versions.json` only when the minimum Obsidian version changes.
 3. Commit and push the release.
-4. Tag it with the exact version number, such as `1.0.1`.
+4. Tag it with the exact version number, such as `1.0.2`.
 5. The release workflow builds and attaches `main.js`, `manifest.json`, `styles.css`, and an installation ZIP to the GitHub release.
 
 ## License
