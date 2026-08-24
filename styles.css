@@ -1,0 +1,32 @@
+.onebib-citation {
+  color: var(--link-color);
+  background: var(--background-modifier-hover);
+  border-radius: var(--radius-s);
+  padding: 0 0.2em;
+  white-space: nowrap;
+}
+
+.onebib-citation.is-missing {
+  color: var(--text-error);
+  text-decoration: underline wavy;
+}
+
+.onebib-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.onebib-suggestion-key {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+  color: var(--text-accent);
+}
+
+.onebib-suggestion-meta {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

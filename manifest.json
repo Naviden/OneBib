@@ -1,0 +1,9 @@
+{
+  "id": "onebib",
+  "name": "OneBib",
+  "version": "1.0.0",
+  "minAppVersion": "1.13.0",
+  "description": "Add simple, local BibTeX citations and references to your notes.",
+  "author": "Navid Nobani",
+  "isDesktopOnly": false
+}
