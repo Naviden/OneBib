@@ -10,7 +10,13 @@ import {
   WidgetType,
 } from "@codemirror/view";
 import { editorLivePreviewField } from "obsidian";
-import { CITATION_PATTERN, formatCitationGroup, formatReference, splitCitationKeys } from "./citations";
+import {
+  CITATION_PATTERN,
+  formatCitationGroup,
+  formatReference,
+  shouldAddSafetySpaceForClosingInput,
+  splitCitationKeys,
+} from "./citations";
 import type { BibEntry } from "./types";
 
 export const bibliographyRefreshEffect = StateEffect.define<number>();
@@ -35,9 +41,25 @@ export function createCitationEditorExtension(
     }
   }
 
-  return ViewPlugin.fromClass(CitationViewPlugin, {
-    decorations: (plugin) => plugin.decorations,
-  });
+  return [
+    ViewPlugin.fromClass(CitationViewPlugin, {
+      decorations: (plugin) => plugin.decorations,
+    }),
+    EditorView.inputHandler.of((view, from, to, text) => {
+      const line = view.state.doc.lineAt(from);
+      const beforeCursor = view.state.sliceDoc(line.from, from);
+      const followingText = view.state.sliceDoc(to, Math.min(to + 1, view.state.doc.length));
+      if (!shouldAddSafetySpaceForClosingInput(beforeCursor, text, followingText)) return false;
+
+      const insertedText = `${text} `;
+      view.dispatch({
+        changes: { from, to, insert: insertedText },
+        selection: { anchor: from + insertedText.length },
+        scrollIntoView: true,
+      });
+      return true;
+    }),
+  ];
 }
 
 class CitationWidget extends WidgetType {

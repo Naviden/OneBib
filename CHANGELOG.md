@@ -2,6 +2,12 @@
 
 All notable changes to OneBib are documented in this file.
 
+## 1.0.1 - 2026-08-24
+
+### Fixed
+
+- Add a safety space after a closing `<<` when needed so following text is not parsed as HTML-like markup in Live Preview.
+
 ## 1.0.0 - 2026-08-24
 
 ### Added

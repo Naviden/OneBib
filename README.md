@@ -21,6 +21,8 @@ OneBib adds simple, local BibTeX citations and reference lists to Obsidian notes
 
 Type `>>` to search the library by citation key, author, or title. You can also use the **Insert citation** command. Multiple works can be cited together with `>>firstKey; secondKey<<`.
 
+OneBib automatically adds a safety space after a closing `<<` when the next character is not whitespace or punctuation. This keeps adjoining words from being interpreted as HTML-like markup in Live Preview.
+
 The original marker stays in the Markdown file. Move the cursor onto a rendered citation in Live Preview to edit its key.
 
 ### Reference markers while editing
@@ -84,7 +86,7 @@ OneBib follows the [official Obsidian plugin release process](https://docs.obsid
 1. Set the same semantic version in `manifest.json` and `package.json`.
 2. Update `versions.json` only when the minimum Obsidian version changes.
 3. Commit and push the release.
-4. Tag it with the exact version number, such as `1.0.0`.
+4. Tag it with the exact version number, such as `1.0.1`.
 5. The release workflow builds and attaches `main.js`, `manifest.json`, `styles.css`, and an installation ZIP to the GitHub release.
 
 ## License

@@ -7,7 +7,7 @@ import {
   FuzzySuggestModal,
   type TFile,
 } from "obsidian";
-import { formatCitation, parseAuthors } from "./citations";
+import { formatCitation, formatCitationMarkerForInsertion, parseAuthors } from "./citations";
 import type { BibEntry } from "./types";
 
 export class CitationEditorSuggest extends EditorSuggest<BibEntry> {
@@ -44,7 +44,12 @@ export class CitationEditorSuggest extends EditorSuggest<BibEntry> {
   selectSuggestion(entry: BibEntry): void {
     const context = this.context;
     if (!context) return;
-    context.editor.replaceRange(`>>${entry.key}<<`, context.start, context.end);
+    const followingText = context.editor.getLine(context.end.line).slice(context.end.ch);
+    context.editor.replaceRange(
+      formatCitationMarkerForInsertion(entry.key, followingText),
+      context.start,
+      context.end,
+    );
   }
 }
 

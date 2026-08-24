@@ -3,8 +3,10 @@ import {
   extractCitationKeys,
   formatCitation,
   formatCitationGroup,
+  formatCitationMarkerForInsertion,
   formatReference,
   parseAuthors,
+  shouldAddSafetySpaceForClosingInput,
 } from "../src/citations";
 import type { BibEntry } from "../src/types";
 
@@ -44,6 +46,25 @@ describe("citation formatting", () => {
     expect(formatReference(article)).toBe(
       "Cambria, E., Malandri, L., Mercorio, F., Mezzanzanica, M., & Nobani, N. (2023). A survey on XAI and natural language explanations. Information Processing & Management, 60(1), 103111. https://doi.org/10.1016/j.ipm.2022.103111",
     );
+  });
+});
+
+describe("citation safety spacing", () => {
+  it("adds a trailing space when inserting before text or at the end of a line", () => {
+    expect(formatCitationMarkerForInsertion("mao2018", "which follows")).toBe(">>mao2018<< ");
+    expect(formatCitationMarkerForInsertion("mao2018")).toBe(">>mao2018<< ");
+  });
+
+  it("does not add another space before whitespace or punctuation", () => {
+    expect(formatCitationMarkerForInsertion("mao2018", " already spaced")).toBe(">>mao2018<<");
+    expect(formatCitationMarkerForInsertion("mao2018", ".")).toBe(">>mao2018<<");
+  });
+
+  it("adds the safety space when a user manually types the second closing angle bracket", () => {
+    expect(shouldAddSafetySpaceForClosingInput(">>mao2018<", "<")).toBe(true);
+    expect(shouldAddSafetySpaceForClosingInput(">>first; second<", "<", "word")).toBe(true);
+    expect(shouldAddSafetySpaceForClosingInput(">>mao2018<", "<", ".")).toBe(false);
+    expect(shouldAddSafetySpaceForClosingInput("ordinary text <", "<")).toBe(false);
   });
 });
 

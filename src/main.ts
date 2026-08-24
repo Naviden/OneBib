@@ -9,6 +9,7 @@ import {
 } from "obsidian";
 import { updateManagedReferences } from "./bibliography";
 import { bibliographyRefreshEffect, createCitationEditorExtension } from "./editor-extension";
+import { formatCitationMarkerForInsertion } from "./citations";
 import { BibliographyLibrary } from "./library";
 import { renderCitationMarkers } from "./reading-view";
 import { OneBibSettingTab } from "./settings";
@@ -159,7 +160,9 @@ export default class OneBibPlugin extends Plugin {
       return;
     }
     new CitationPickerModal(this.app, entries, (entry) => {
-      editor.replaceSelection(`>>${entry.key}<<`);
+      const selectionEnd = editor.getCursor("to");
+      const followingText = editor.getLine(selectionEnd.line).slice(selectionEnd.ch);
+      editor.replaceSelection(formatCitationMarkerForInsertion(entry.key, followingText));
     }).open();
   }
 

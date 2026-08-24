@@ -1,6 +1,6 @@
 {
   "name": "onebib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple, local BibTeX citations for Obsidian.",
   "main": "main.js",
   "type": "module",

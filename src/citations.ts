@@ -1,11 +1,33 @@
 import type { BibEntry } from "./types";
 
 export const CITATION_PATTERN = />>\s*([A-Za-z0-9_:.+\-/]+(?:\s*;\s*[A-Za-z0-9_:.+\-/]+)*)\s*<</g;
+const CITATION_CLOSING_PREFIX_PATTERN = />>\s*[A-Za-z0-9_:.+\-/]+(?:\s*;\s*[A-Za-z0-9_:.+\-/]+)*\s*<$/;
+const CLOSING_PUNCTUATION_PATTERN = /^[.,;:!?)}\]'"’”]/;
 
 export interface PersonName {
   family: string;
   given: string;
   suffix: string;
+}
+
+export function formatCitationMarkerForInsertion(key: string, followingText = ""): string {
+  return `>>${key}<<${needsCitationSafetySpace(followingText) ? " " : ""}`;
+}
+
+export function shouldAddSafetySpaceForClosingInput(
+  beforeCursor: string,
+  insertedText: string,
+  followingText = "",
+): boolean {
+  return insertedText === "<"
+    && CITATION_CLOSING_PREFIX_PATTERN.test(beforeCursor)
+    && needsCitationSafetySpace(followingText);
+}
+
+function needsCitationSafetySpace(followingText: string): boolean {
+  if (!followingText) return true;
+  const nextCharacter = followingText.charAt(0);
+  return !/\s/.test(nextCharacter) && !CLOSING_PUNCTUATION_PATTERN.test(nextCharacter);
 }
 
 export function extractCitationKeys(markdown: string): string[] {
